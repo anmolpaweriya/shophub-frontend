@@ -26,12 +26,14 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { useWishlist } from "@/contexts/wishlist-context";
 import { useAuth } from "@/contexts/auth-context";
 import { useState } from "react";
+import { USER_ROLE, useUserData } from "@/contexts/user-context";
 
 export function Navbar() {
   const { wishlist } = useWishlist();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useUserData();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
@@ -106,11 +108,13 @@ export function Navbar() {
                           {user.email}
                         </p>
                         <Badge variant="secondary" className="mt-2">
-                          {user.role === "vendor" ? "Vendor" : "Customer"}
+                          {user.role === USER_ROLE.VENDOR
+                            ? "Vendor"
+                            : "Customer"}
                         </Badge>
                       </div>
 
-                      {user.role === "vendor" ? (
+                      {user.role === USER_ROLE.VENDOR ? (
                         <>
                           <Link
                             href="/vendor/dashboard"
@@ -183,13 +187,13 @@ export function Navbar() {
                         {user.email}
                       </p>
                       <Badge variant="secondary" className="w-fit text-xs mt-1">
-                        {user.role === "vendor" ? "Vendor" : "Customer"}
+                        {user.role === USER_ROLE.VENDOR ? "Vendor" : "Customer"}
                       </Badge>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {user.role === "vendor" ? (
+                  {user.role === USER_ROLE.VENDOR ? (
                     <>
                       <DropdownMenuItem asChild>
                         <Link
@@ -238,7 +242,7 @@ export function Navbar() {
             )}
 
             {/* Wishlist - only show for customers */}
-            {(!user || user.role === "customer") && (
+            {(!user || user.role === USER_ROLE.CUSTOMER) && (
               <Link href="/wishlist">
                 <Button variant="ghost" size="icon" className="relative">
                   <Heart className="h-5 w-5" />
@@ -252,7 +256,7 @@ export function Navbar() {
             )}
 
             {/* Shopping Cart Drawer - only show for customers */}
-            {(!user || user.role === "customer") && <CartDrawer />}
+            {(!user || user.role === USER_ROLE.CUSTOMER) && <CartDrawer />}
           </div>
         </div>
       </div>

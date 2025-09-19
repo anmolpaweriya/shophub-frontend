@@ -1,143 +1,123 @@
-"use client"
+// auth-context.tsx
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios from "axios";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { UserProvider, useUserData } from "./user-context";
 
-export type UserRole = "customer" | "vendor"
-
-export interface User {
-  id: string
-  email: string
-  name: string
-  role: UserRole
-  createdAt: string
-}
+const queryClient = new QueryClient();
 
 interface AuthContextType {
-  user: User | null
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  accessToken: string | null;
+  login: (email: string, password: string) => Promise<any>;
   signup: (
     email: string,
     password: string,
     name: string,
-    role: UserRole,
-  ) => Promise<{ success: boolean; error?: string }>
-  logout: () => void
-  isLoading: boolean
+    role: UserRole
+  ) => Promise<any>;
+  logout: () => void;
+  isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export type UserRole = "CUSTOMER" | "VENDOR";
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProviderChild({ children }: { children: React.ReactNode }) {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on mount
-    const savedUser = localStorage.getItem("user")
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser))
-      } catch (error) {
-        console.error("Error loading user from localStorage:", error)
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setAccessToken(token);
+    }
+    setIsLoading(false);
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_AUTH_SERVICE_API_URL}/auth/sign-in`,
+      {
+        email: email.trim(),
+        password,
       }
-    }
-    setIsLoading(false)
-  }, [])
+    );
 
-  const login = useCallback(async (email: string, password: string) => {
-    setIsLoading(true)
+    const { accessToken } = response.data.data;
+    setAccessToken(accessToken);
+    localStorage.setItem("accessToken", accessToken);
+  };
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+  const signup = useCallback(
+    async (email: string, password: string, name: string, role: UserRole) => {
+      setIsLoading(true);
 
-    // Get users from localStorage or create demo users
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_AUTH_SERVICE_API_URL}/auth/sign-up`,
+          {
+            email,
+            password,
+            name,
+            role,
+          }
+        );
 
-    // Add demo users if none exist
-    if (users.length === 0) {
-      const demoUsers = [
-        {
-          id: "1",
-          email: "vendor@demo.com",
-          password: "password",
-          name: "Demo Vendor",
-          role: "vendor" as UserRole,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "2",
-          email: "customer@demo.com",
-          password: "password",
-          name: "Demo Customer",
-          role: "customer" as UserRole,
-          createdAt: new Date().toISOString(),
-        },
-      ]
-      localStorage.setItem("users", JSON.stringify(demoUsers))
-      users.push(...demoUsers)
-    }
-
-    const foundUser = users.find((u: any) => u.email === email && u.password === password)
-
-    if (foundUser) {
-      const { password: _, ...userWithoutPassword } = foundUser
-      setUser(userWithoutPassword)
-      localStorage.setItem("user", JSON.stringify(userWithoutPassword))
-      setIsLoading(false)
-      return { success: true }
-    } else {
-      setIsLoading(false)
-      return { success: false, error: "Invalid email or password" }
-    }
-  }, [])
-
-  const signup = useCallback(async (email: string, password: string, name: string, role: UserRole) => {
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const users = JSON.parse(localStorage.getItem("users") || "[]")
-
-    // Check if user already exists
-    if (users.find((u: any) => u.email === email)) {
-      setIsLoading(false)
-      return { success: false, error: "User with this email already exists" }
-    }
-
-    const newUser = {
-      id: Date.now().toString(),
-      email,
-      password,
-      name,
-      role,
-      createdAt: new Date().toISOString(),
-    }
-
-    users.push(newUser)
-    localStorage.setItem("users", JSON.stringify(users))
-
-    const { password: _, ...userWithoutPassword } = newUser
-    setUser(userWithoutPassword)
-    localStorage.setItem("user", JSON.stringify(userWithoutPassword))
-
-    setIsLoading(false)
-    return { success: true }
-  }, [])
+        const { accessToken } = response.data.data;
+        setAccessToken(accessToken);
+        localStorage.setItem("accessToken", accessToken);
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          error: axios.isAxiosError(error)
+            ? error.response?.data?.message || error.message
+            : "Signup failed",
+        };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const logout = useCallback(() => {
-    setUser(null)
-    localStorage.removeItem("user")
-  }, [])
+    setAccessToken(null);
+    localStorage.removeItem("accessToken");
+  }, []);
 
-  return <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider
+      value={{ accessToken, login, signup, logout, isLoading }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
+  return context;
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProviderChild>
+        <UserProvider>{children}</UserProvider>
+      </AuthProviderChild>
+    </QueryClientProvider>
+  );
 }
