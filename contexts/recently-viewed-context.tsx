@@ -18,7 +18,7 @@ export function RecentlyViewedProvider({ children }: { children: React.ReactNode
 
   // Load recently viewed from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("recentlyViewed")
+    const saved = localStorage?.getItem("recentlyViewed")
     if (saved) {
       try {
         setRecentlyViewed(JSON.parse(saved))

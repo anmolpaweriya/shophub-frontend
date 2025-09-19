@@ -3,8 +3,8 @@ import { Footer } from "@/components/footer"
 import { ProductImageGallery } from "@/components/product-image-gallery"
 import { ProductInfo } from "@/components/product-info"
 import { ProductReviews } from "@/components/product-reviews"
-import { RelatedProducts } from "@/components/related-products"
-import { RecentlyViewed } from "@/components/recently-viewed"
+// import { RelatedProducts } from "@/components/related-products"
+// import { RecentlyViewed } from "@/components/recently-viewed"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import {
   Breadcrumb,
@@ -68,11 +68,11 @@ export default function ProductPage({ params }: ProductPageProps) {
         <ProductReviews product={product} />
 
         {/* Related Products */}
-        {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}
+        {/* {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />} */}
       </main>
 
       {/* Recently Viewed */}
-      <RecentlyViewed />
+      {/* <RecentlyViewed /> */}
 
       <Footer />
     </div>

@@ -1,10 +1,18 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Search, Heart, User, Menu, LogOut, Store, Package } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import Link from "next/link";
+import {
+  Search,
+  Heart,
+  User,
+  Menu,
+  LogOut,
+  Store,
+  Package,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,18 +20,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { CartDrawer } from "@/components/cart-drawer"
-import { useWishlist } from "@/contexts/wishlist-context"
-import { useAuth } from "@/contexts/auth-context"
-import { useState } from "react"
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CartDrawer } from "@/components/cart-drawer";
+import { useWishlist } from "@/contexts/wishlist-context";
+import { useAuth } from "@/contexts/auth-context";
+import { useState } from "react";
 
 export function Navbar() {
-  const { wishlist } = useWishlist()
-  const { user, logout } = useAuth()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { wishlist } = useWishlist();
+  const { user, logout } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
@@ -32,7 +40,9 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-              <span className="text-primary-foreground font-bold text-xl">S</span>
+              <span className="text-primary-foreground font-bold text-xl">
+                S
+              </span>
             </div>
             <span className="text-xl font-bold text-foreground">ShopHub</span>
           </Link>
@@ -64,7 +74,9 @@ export function Navbar() {
                 <div className="flex items-center justify-between mb-6">
                   <Link href="/" className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                      <span className="text-primary-foreground font-bold text-lg">S</span>
+                      <span className="text-primary-foreground font-bold text-lg">
+                        S
+                      </span>
                     </div>
                     <span className="text-xl font-bold">ShopHub</span>
                   </Link>
@@ -90,7 +102,9 @@ export function Navbar() {
                     <>
                       <div className="pb-4 border-b">
                         <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {user.email}
+                        </p>
                         <Badge variant="secondary" className="mt-2">
                           {user.role === "vendor" ? "Vendor" : "Customer"}
                         </Badge>
@@ -114,7 +128,10 @@ export function Navbar() {
                           </Link>
                         </>
                       ) : (
-                        <Link href="/orders" className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted">
+                        <Link
+                          href="/orders"
+                          className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted"
+                        >
                           <Package className="h-5 w-5" />
                           <span>My Orders</span>
                         </Link>
@@ -133,7 +150,11 @@ export function Navbar() {
                       <Button asChild className="w-full">
                         <Link href="/login">Sign in</Link>
                       </Button>
-                      <Button variant="outline" asChild className="w-full bg-transparent">
+                      <Button
+                        variant="outline"
+                        asChild
+                        className="w-full bg-transparent"
+                      >
                         <Link href="/signup">Sign up</Link>
                       </Button>
                     </div>
@@ -145,15 +166,22 @@ export function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden md:flex">
+                  <button
+                    type="button"
+                    className="hidden md:flex items-center justify-center h-10 w-10 rounded-md hover:bg-muted transition-colors"
+                  >
                     <User className="h-5 w-5" />
-                  </Button>
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      <p className="text-sm font-medium leading-none">
+                        {user.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
                       <Badge variant="secondary" className="w-fit text-xs mt-1">
                         {user.role === "vendor" ? "Vendor" : "Customer"}
                       </Badge>
@@ -164,13 +192,19 @@ export function Navbar() {
                   {user.role === "vendor" ? (
                     <>
                       <DropdownMenuItem asChild>
-                        <Link href="/vendor/dashboard" className="flex items-center">
+                        <Link
+                          href="/vendor/dashboard"
+                          className="flex items-center"
+                        >
                           <Store className="mr-2 h-4 w-4" />
                           Vendor Dashboard
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/vendor/products" className="flex items-center">
+                        <Link
+                          href="/vendor/products"
+                          className="flex items-center"
+                        >
                           <Package className="mr-2 h-4 w-4" />
                           Manage Products
                         </Link>
@@ -223,5 +257,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
