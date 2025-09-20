@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Suspense } from "react";
 import "./globals.css";
 import { UserProvider } from "@/contexts/user-context";
+import { CategoryProvider } from "@/contexts/catagory-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,14 +43,16 @@ export default function RootLayout({
       >
         <Suspense fallback={<div>Loading...</div>}>
           <AuthProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <RecentlyViewedProvider>
-                  {children}
-                  <Toaster />
-                </RecentlyViewedProvider>
-              </WishlistProvider>
-            </CartProvider>
+            <CategoryProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <RecentlyViewedProvider>
+                    {children}
+                    <Toaster />
+                  </RecentlyViewedProvider>
+                </WishlistProvider>
+              </CartProvider>
+            </CategoryProvider>
           </AuthProvider>
         </Suspense>
         <Analytics />
